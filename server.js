@@ -17,12 +17,16 @@ const port = process.env.PORT;
 // Middleware to parse JSON bodies
 app.use(cors());
 app.use(express.json());
-app.use(insertLogs)
+
+
+app.use('/migrate', migrateRoute);
+
+//app.use(insertLogs)
 
 // Use routes
 app.use('/api',  apiRoute);
 app.use('/auth', authRoute);
-app.use('/migrate', migrateRoute);
+
 app.use('/picture', picturesRoute);
 app.use('/review', reviewsRoute);
 
