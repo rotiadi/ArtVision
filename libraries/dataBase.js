@@ -6,13 +6,22 @@ dotenv.config();
 
 class Database {
   constructor() {
-    this.pool = new Pool({
+/*     this.pool = new Pool({
       host: process.env.DB_HOST,
       user: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
       port: process.env.DB_PORT,
-    });
+    }); */
+
+    this.pool = new Pool({
+      connectionString: process.env.DATABASE_URL,
+      ssl: {
+        rejectUnauthorized: false, // Required for Heroku
+      },
+    })
+
+
   }
 
   async query(text, params) {
