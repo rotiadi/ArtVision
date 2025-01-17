@@ -326,7 +326,7 @@ token genererated on login
     "message": "The reviews  has been added!"
 }
 
-# /revies/getByArtist
+# /review/getByArtist
 ## GET 
 **body** 
 {
@@ -355,6 +355,63 @@ token genererated on login
     }
 ]
 
+# /cart/add
+## POST
+
+**body**
+{
+    "id_painting": 2,
+    "price": 2.4
+}
+
+**Authorization**
+ Token (that its generated on login - see /auth/login). Is mandatory.
+
+**response**
+{
+    "Status": "Success",
+    "message": "The painting  has been added!"
+}
+
+# /cart/view
+## GET
+
+**Authorization**
+ Token (that its generated on login - see /auth/login). Is mandatory.
+
+**response**
+[
+    {
+        "id": 4,
+        "id_user": 1,
+        "id_painting": 2,
+        "price": "2.4",
+        "date": "2025-01-16T23:00:00.000Z",
+        "title": "Title 2",
+        "description": "desc2",
+        "width": "500",
+        "height": "2000",
+        "material": "momo",
+        "surface": "wood",
+        "id_artist": 2,
+        "artist": "USER"
+    },
+    {
+        "id": 5,
+        "id_user": 1,
+        "id_painting": 2,
+        "price": "2.4",
+        "date": "2025-01-16T23:00:00.000Z",
+        "title": "Title 2",
+        "description": "desc2",
+        "width": "500",
+        "height": "2000",
+        "material": "momo",
+        "surface": "wood",
+        "id_artist": 2,
+        "artist": "USER"
+    }
+]
 
 for me:
 

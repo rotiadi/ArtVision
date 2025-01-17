@@ -89,8 +89,8 @@ router.all("/", async (req, res) => {
             CREATE TABLE IF NOT EXISTS reviews
             (
                 id SERIAL PRIMARY KEY NOT NULL, 
-                "artistId" integer,
-                "userId" integer,
+                "id_artist" integer,
+                "id_user" integer,
                 rating numeric,
                 title text ,
                 body text ,
@@ -117,6 +117,30 @@ router.all("/", async (req, res) => {
                 log text 
                
     )`)
+
+    await db.query(`
+        DROP TABLE IF EXISTS cart_products;
+
+        CREATE TABLE IF NOT EXISTS cart_products
+        (
+            id SERIAL PRIMARY KEY NOT NULL, 
+            id_user integer NOT NULL,
+            id_painting integer NOT NULL,
+            price numeric,
+            date date,
+            status text,
+            CONSTRAINT fk_painting FOREIGN KEY (id_painting)
+                REFERENCES paintings (id) MATCH SIMPLE
+                ON UPDATE NO ACTION
+                ON DELETE NO ACTION
+                NOT VALID,
+            CONSTRAINT fk_user FOREIGN KEY (id_user)
+                REFERENCES users (id) MATCH SIMPLE
+                ON UPDATE NO ACTION
+                ON DELETE NO ACTION
+                NOT VALID
+        )
+        `)
 
 
 

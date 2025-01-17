@@ -4,7 +4,7 @@ const authRoute = require('./routes/auth.js')
 const migrateRoute = require('./routes/migrate.js')
 const picturesRoute = require('./routes/imagesApi.js')
 const reviewsRoute = require('./routes/reviews.js')
-const testRoute = require('./routes/test.js')
+const cartRoute = require('./routes/cart.js')
 const cors = require('cors');
 
 const insertLogs = require('./middlewares/logs.js')
@@ -22,7 +22,7 @@ app.use(express.json());
 
 app.use('/migrate', migrateRoute);
 
-//app.use(insertLogs)
+app.use(insertLogs)
 
 // Use routes
 app.use('/api',  apiRoute);
@@ -30,7 +30,7 @@ app.use('/auth', authRoute);
 
 app.use('/picture', picturesRoute);
 app.use('/review', reviewsRoute);
-app.use('/test', testRoute);
+app.use('/cart', cartRoute);
 
 app.get("/", (req, res) => {
     res.status(200).json({
