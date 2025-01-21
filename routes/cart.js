@@ -1,6 +1,7 @@
 const express = require('express');
 const dataBase = require('../libraries/dataBase');
 const authenticateToken = require('../middlewares/authenticateToken');
+const {checkPaintingAvailability} = require('../middlewares/db')
 
 const router = express.Router();
 
@@ -8,7 +9,7 @@ const router = express.Router();
 /cart/view - gets products from a user cart (step 2)
 /cart/sendToPay - create a list of products to be paid and "removes" the corresponding products from the cart (step 4) */
 
-router.post('/add',authenticateToken,  async (req, res) => {
+router.post('/add', authenticateToken, checkPaintingAvailability,  async (req, res) => {
     
     const {id_painting, price} = req.body;
     let errors = [];
@@ -36,7 +37,7 @@ router.post('/add',authenticateToken,  async (req, res) => {
         }
     else {
     
-            const records = await dataBase.query('INSERT INTO public.cart_products(id_user, id_painting, price, date) VALUES ( $1, $2, $3, $4)', [req.id_user, id_painting, price, (new Date()).toLocaleDateString()]).catch(err => {
+            const records = await dataBase.query('INSERT INTO cart_products(id_user, id_painting, price, date) VALUES ( $1, $2, $3, $4)', [req.id_user, id_painting, price, (new Date()).toLocaleDateString()]).catch(err => {
                 res.status(500)
                 res.send(
                     {
@@ -101,29 +102,39 @@ router.post('/sendToPay', authenticateToken, async (req, res) => {
         })
     }
     else {
-        //TODO
-        // INSERT INTO NEW TABLE
-        //UPDATE STATUS IN cart_products WITH PAID
-        const records = await dataBase.query().catch(err => {
-            res.status(500)
-            res.send(
-                {
-                    "Status": "error writting to DB",
-                    "message": err
-                }
-            )
-        })
+        const client = await dataBase.pool.connect();
+        await client.query('BEGIN')
+        
+        try {
+        for (let index = 0; index < cart_paintings.length; index++) {
+            const result = await client.query(
+                `INSERT INTO public.order_details(id_user, id_cart, price, date) VALUES ($1, $2, $3, $4)`
+              , [req.id_user, cart_paintings[index].id, cart_paintings[index].price, (new Date()).toLocaleDateString()]);
 
-        if (records) {
-            res.status(200);
-            res.send(
-                {
-                    "Status": "Success",
-                    "message": `The list is send to pay!`
-                })
+            const resultUpdate = await client.query(
+                `update cart_products set status = 'Send to payment' where id = $1`, [cart_paintings[index].id]
+            );
 
+            await client.query(`update paintings  set status = 'Sold' where id  in (select cp.id_painting from cart_products cp where cp.id = $1)`, [cart_paintings[index].id]);
+            
         }
-}
-})
+        await client.query('COMMIT');
+        res.status(200);
+                res.send(
+                    {
+                        "Status": "Success",
+                        "message": `The order is send!`
+                    })
+        } catch  (error) {
+            await client.query('ROLLBACK');
+            res.status(401).json({"Status": "Error", "message": error})
+        } finally {
+        client.release();
+        }
+       
+
+        
+    }
+}) 
 
 module.exports = router;

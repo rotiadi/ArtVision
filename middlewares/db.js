@@ -40,4 +40,51 @@ const insertLogIntoDb = async (log) => {
     }
 }
 
-module.exports = {insertMaterialsiIntoDb, insertLogIntoDb}
+const checkPaintingToArtist = async (req, res, next) => {
+    const {id_painting} = req.body;
+    const id_user = req.id_user;
+
+    try {
+       const result =  await dataBase.pool.query(`select count(1) from paintings where id_user = $1 and id = $2`, [id_user, id_painting]);
+        if(result.rows[0].count === "0"){
+            res.status(500).send({
+                "status": "Error",
+                "message": "This is not your painting. "
+            })
+        }
+        else {
+            next();
+        }
+       
+    } catch(error) {
+        res.status(500).send({
+            status: "Error checking the painting and the artist",
+            message: error || "An unknown error occurred",
+        });
+    }
+}
+
+const checkPaintingAvailability = async (req, res, next) => {
+    const {id_painting} = req.body;
+    try {
+        const result =  await dataBase.pool.query(`select title, status from paintings where id = $1`, [id_painting]);
+        
+        if(result.rows[0].status === "Sold"){
+             res.status(500).send({
+                 "status": "Error",
+                 "message": `The painting ${result.rows[0].title} is no logger available. `
+             })
+         }
+        else {
+             next();
+         }
+        
+     } catch(error) {
+         res.status(500).send({
+             status: "Error checking the painting Availability",
+             message: error || "An unknown error occurred",
+         });
+     }
+}
+
+module.exports = {insertMaterialsiIntoDb, insertLogIntoDb, checkPaintingToArtist, checkPaintingAvailability}

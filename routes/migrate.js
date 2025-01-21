@@ -140,8 +140,31 @@ router.all("/", async (req, res) => {
                 ON DELETE NO ACTION
                 NOT VALID
         )
-        `)
+        `);
 
+    await db.query(`
+        DROP TABLE IF EXISTS order_details;
+
+        CREATE TABLE IF NOT EXISTS order_details
+        (
+            id SERIAL PRIMARY KEY NOT NULL, 
+            id_user integer NOT NULL,
+            id_cart integer NOT NULL,
+            price numeric,
+            date date,
+            status text,
+            CONSTRAINT fk_cart FOREIGN KEY (id_cart)
+                REFERENCES cart_products (id) MATCH SIMPLE
+                ON UPDATE NO ACTION
+                ON DELETE NO ACTION
+                NOT VALID,
+            CONSTRAINT fk_user FOREIGN KEY (id_user)
+                REFERENCES users (id) MATCH SIMPLE
+                ON UPDATE NO ACTION
+                ON DELETE NO ACTION
+                NOT VALID
+        )
+        `)
 
 
     res.status(201).json({
