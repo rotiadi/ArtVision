@@ -413,6 +413,43 @@ token genererated on login
     }
 ]
 
+
+# /cart/sendToPay
+## POST
+
+**Authorization**
+ Token (that its generated on login - see /auth/login). Is mandatory.
+
+ **body**
+ {
+    "cart_paintings": [
+        {"id": 1, "price":2.5},
+        {"id": 2, "price":3232}
+    ]
+}
+
+**response**
+{
+    "Status": "Success",
+    "message": "The order is send!"
+}
+{
+    "Status": "Error",
+    "message": {
+        "length": 246,
+        "name": "error",
+        "severity": "ERROR",
+        "code": "23503",
+        "detail": "Key (id_cart)=(991) is not present in table \"cart_products\".",
+        "schema": "public",
+        "table": "order_details",
+        "constraint": "fk_cart",
+        "file": "ri_triggers.c",
+        "line": "2641",
+        "routine": "ri_ReportViolation"
+    }
+}
+
 for me:
 
 

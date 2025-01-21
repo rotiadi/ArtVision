@@ -5,10 +5,6 @@ const {checkPaintingAvailability} = require('../middlewares/db')
 
 const router = express.Router();
 
-/* /cart/add - add a product to a cart (step 1)
-/cart/view - gets products from a user cart (step 2)
-/cart/sendToPay - create a list of products to be paid and "removes" the corresponding products from the cart (step 4) */
-
 router.post('/add', authenticateToken, checkPaintingAvailability,  async (req, res) => {
     
     const {id_painting, price} = req.body;
