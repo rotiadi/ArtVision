@@ -55,7 +55,7 @@ router.post('/add', authenticateToken, checkPaintingAvailability,  async (req, r
     }
 })
 
-router.get('/view', authenticateToken, async (req, res) => {
+router.post('/view', authenticateToken, async (req, res) => {
 
     const records = await dataBase.query(`select cp.id, cp.id_user, cp.id_painting, cp.price, cp.date, 
 		p.title, p.description, p.width, p.height, m.name as material, s.name as surface,

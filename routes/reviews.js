@@ -70,7 +70,7 @@ router.post('/add', authenticateToken,  async (req, res) => {
 })
 
 
-router.get('/getByArtist', async (req, res) => {
+router.post('/getByArtist', async (req, res) => {
     const {artistId} = req.body;
     let errors = [];
 

@@ -129,7 +129,7 @@ router.post('/upload', upload.single('image'), authenticateToken, async (req, re
 })
 
 
-router.get('/getAll', async (req, res) => {
+router.post('/getAll', async (req, res) => {
 
     try {
         const result = await dataBase.pool.query(`select 
@@ -148,7 +148,7 @@ router.get('/getAll', async (req, res) => {
     }
 });
 
-router.get('/getByUser', authenticateToken, async (req, res) => {
+router.post('/getByUser', authenticateToken, async (req, res) => {
     
     try {
         const result = await dataBase.pool.query(`select 
@@ -168,7 +168,7 @@ router.get('/getByUser', authenticateToken, async (req, res) => {
     }
 });
 
-router.get('/getByIdUser', async (req, res) => {
+router.post('/getByIdUser', async (req, res) => {
    
     let errors = [];
     const { idUser } = req.body;
@@ -204,7 +204,7 @@ router.get('/getByIdUser', async (req, res) => {
     }
 });
 
-router.get('/getFiltered', async (req, res) => {
+router.post('/getFiltered', async (req, res) => {
     
     const {materials, surfaces, dimensions, prices} = req.body;   
       

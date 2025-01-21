@@ -9,7 +9,7 @@ const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() });
 
 
-router.get('/general/materials', async (req, res) => {
+router.post('/general/materials', async (req, res) => {
       
     const records = await dataBase.query('select * from materials');
     res.send(records.rows)
@@ -26,7 +26,7 @@ router.post('/general/materials/add', insertMaterialsiIntoDb,  async (req, res) 
 
 })
 
-router.get('/general/surfaces', async (req, res) => {
+router.post('/general/surfaces', async (req, res) => {
        
     const records = await dataBase.query('select * from surfaces');
     res.send(records.rows)
@@ -77,7 +77,7 @@ router.post('/general/surfaces/add', async (req, res) => {
 
 })
 
-router.get('/general/dimensions', async (req, res) => {
+router.post('/general/dimensions', async (req, res) => {
     
     const records = await dataBase.query('select * from dimensions');
     res.send(records.rows)
