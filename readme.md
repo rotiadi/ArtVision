@@ -45,7 +45,7 @@ If succes it generates a key that contains userName, email and id of user.
 
 
 # /api/general/materials
-## GET
+## POST
 
 **response** 
 
@@ -58,7 +58,7 @@ If succes it generates a key that contains userName, email and id of user.
 
 # /api//general/surfaces
 
-## GET
+## POST
 
 **response** 
 
@@ -72,7 +72,7 @@ If succes it generates a key that contains userName, email and id of user.
 
 
 # /api/general/dimensions
-## GET
+## POST
 
 **response** 
 [
@@ -115,7 +115,7 @@ price (text)
 
 
 # /picture/getAll
-## GET
+## POST
 
 **response**
 
@@ -204,7 +204,7 @@ price (text)
 
 
 # /picture/getByUser
-## GET
+## POST
 
 **Authorization**
 Token (that its generated on login - see /auth/login). Is mandatory.
@@ -230,7 +230,7 @@ Token (that its generated on login - see /auth/login). Is mandatory.
 ]
 
 # /picture/getByIdUser
-## GET
+## POST
 
 **Body**
 {
@@ -259,7 +259,7 @@ Token (that its generated on login - see /auth/login). Is mandatory.
 
 
 # /picture/getFiltered
-## GET
+## POST
 
 **Body** 
 {
@@ -327,7 +327,7 @@ token genererated on login
 }
 
 # /review/getByArtist
-## GET 
+## POST 
 **body** 
 {
     "artistId": 1
@@ -374,7 +374,7 @@ token genererated on login
 }
 
 # /cart/view
-## GET
+## POST
 
 **Authorization**
  Token (that its generated on login - see /auth/login). Is mandatory.

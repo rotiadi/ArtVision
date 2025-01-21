@@ -1,7 +1,7 @@
 {
   "name": "artvision",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
@@ -20,5 +20,8 @@
     "nodemon": "^3.1.9",
     "pg": "^8.13.1",
     "validator": "^13.12.0"
+  },
+  "engines": {
+  "node": "23.6.0"
   }
 }
