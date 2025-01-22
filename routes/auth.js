@@ -3,7 +3,7 @@ const dataBase = require('../libraries/dataBase');
 const validator = require('validator');
 const bcrypt = require("bcryptjs");
 const jwt =  require("jsonwebtoken");
-const insertLogs = require('../middlewares/logs')
+const { checkConection } = require('../middlewares/db');
 
 
 const router = express.Router();
@@ -77,7 +77,7 @@ const checkPassword = (req, res, next) => {
 };
 
 
-router.post("/register",checkEmail, checkPassword, async (req, res) => {
+router.post("/register",checkConection,  checkEmail, checkPassword, async (req, res) => {
     
     let {user_name, name, email, phone, password , address, artist} = req.body;
     

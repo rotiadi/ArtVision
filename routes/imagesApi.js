@@ -3,8 +3,8 @@ const express = require('express');
 const cloudinary = require('cloudinary').v2;
 const multer = require('multer');
 const dataBase = require('../libraries/dataBase');
-const { route } = require('./api');
 const authenticateToken = require('../middlewares/authenticateToken');
+const { checkConection } = require('../middlewares/db');
 require('dotenv').config();
 
 const router = express.Router();
@@ -20,7 +20,7 @@ cloudinary.config({
 
 //router.use(authenticateToken);
 
-router.post('/upload', upload.single('image'), authenticateToken, async (req, res) => {
+router.post('/upload',checkConection, upload.single('image'), authenticateToken, async (req, res) => {
 
     const myImage = req.file;
     const { id_material, id_surface, title, description, width, height , price } = req.body;
@@ -91,8 +91,9 @@ router.post('/upload', upload.single('image'), authenticateToken, async (req, re
             folder: 'ArtZVision',
         });
         console.log("Succes upload in cloud");
+        const client = await dataBase.pool.connect();
 
-        await dataBase.pool.query(`INSERT INTO public.paintings(
+        await client.query(`INSERT INTO public.paintings(
          id_user, title, description, id_material, id_surface, width, height, price, status,  original_file_name, share_path, uploaded_date)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
             [req.id_user, title, description,  id_material, id_surface, width, height, price, 'Insert', uploadResultCloudinary.original_filename, uploadResultCloudinary.secure_url, (new Date()).toLocaleDateString()],
@@ -124,15 +125,17 @@ router.post('/upload', upload.single('image'), authenticateToken, async (req, re
                     }
                 }
             })
+
+            client.release();
     }
 
 })
 
 
-router.post('/getAll', async (req, res) => {
+router.post('/getAll',checkConection,  async (req, res) => {
 
     try {
-        const result = await dataBase.pool.query(`select 
+        const result = await dataBase.query(`select 
             p.id, p.id_material, m.name material_name,
             p.id_surface, s.name as surface_name,
             p.title, p.description, p.width, p.height, p.price, p.share_path,
@@ -148,10 +151,10 @@ router.post('/getAll', async (req, res) => {
     }
 });
 
-router.post('/getByUser', authenticateToken, async (req, res) => {
+router.post('/getByUser', checkConection, authenticateToken, async (req, res) => {
     
     try {
-        const result = await dataBase.pool.query(`select 
+        const result = await dataBase.query(`select 
             p.id, p.id_material, m.name material_name,
             p.id_surface, s.name as surface_name,
             p.title, p.description,p.width, p.height, p.price, p.share_path,
@@ -168,7 +171,7 @@ router.post('/getByUser', authenticateToken, async (req, res) => {
     }
 });
 
-router.post('/getByIdUser', async (req, res) => {
+router.post('/getByIdUser',checkConection,  async (req, res) => {
    
     let errors = [];
     const { idUser } = req.body;
@@ -186,7 +189,7 @@ router.post('/getByIdUser', async (req, res) => {
     else {
 
         try {
-            const result = await dataBase.pool.query(`select 
+            const result = await dataBase.query(`select 
             p.id, p.id_material, m.name material_name,
             p.id_surface, s.name as surface_name,
             p.title, p.description, p.width, p.height, p.price, p.share_path,
@@ -204,14 +207,14 @@ router.post('/getByIdUser', async (req, res) => {
     }
 });
 
-router.post('/getFiltered', async (req, res) => {
+router.post('/getFiltered',checkConection,  async (req, res) => {
     
     const {materials, surfaces, dimensions, prices} = req.body;   
       
 
      try {
         
-        const result = await dataBase.pool.query(`select 
+        const result = await dataBase.query(`select 
         p.id, p.id_material, m.name material_name,
         p.id_surface, s.name as surface_name,
         p.title, p.description, p.width, p.height, p.price, p.share_path,

@@ -27,7 +27,7 @@ class Database {
   }
 
   async close() {
-    await this.client.end();
+    await this.client.release();
     console.log('Closed database connection');
   }
 }

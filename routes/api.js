@@ -1,7 +1,7 @@
 const express = require('express');
 const dataBase = require('../libraries/dataBase');
 const multer = require('multer');
-const {insertMaterialsiIntoDb} = require('../middlewares/db')
+const {insertMaterialsiIntoDb, checkConection} = require('../middlewares/db')
 const pool = require('../libraries/newDB')
 
 const router = express.Router();
@@ -9,21 +9,8 @@ const router = express.Router();
 // Configure Multer for memory storage
 const upload = multer({ storage: multer.memoryStorage() });
 
-const removeListener = () => {
-    pool.removeAllListeners('error');
-};
-
-
-
-router.post('/general/materials', async (req, res) => {
-      
-    // the pool will emit an error on behalf of any idle clients
-    // it contains if a backend error or network partition happens
-    pool.on('error', (err, client) => {
-        console.error('Unexpected error on idle client', err)
-        process.exit(-1)
-    })
-    
+router.post('/general/materials', checkConection,  async (req, res) => {
+         
     const client = await pool.connect();
     try {
         const result = await client.query('SELECT * FROM materials');
@@ -32,25 +19,11 @@ router.post('/general/materials', async (req, res) => {
         console.error('Database query error:', err);
         res.status(500).send('Server error');
     } finally {
-        removeListener();
-        client.release(); // Always release the client
-    }
-
-    /* await pool.connect();
-    try {
-        const result = await pool.query('select * from materials');
-        res.json(result.rows);
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('Server error');
-    } finally {
-        pool.end(); // Release the connection
-    } */
-    
-
+        client.release(); 
+    }  
 })
 
-router.post('/general/materials/add', insertMaterialsiIntoDb,  async (req, res) => {
+router.post('/general/materials/add', checkConection,  insertMaterialsiIntoDb,  async (req, res) => {
         const {name} = req.body;
 
         res.status(200).send({
@@ -60,15 +33,23 @@ router.post('/general/materials/add', insertMaterialsiIntoDb,  async (req, res) 
 
 })
 
-router.post('/general/surfaces', async (req, res) => {
+router.post('/general/surfaces',checkConection, async (req, res) => {
        
-    const records = await dataBase.query('select * from surfaces');
-    res.send(records.rows)
+    const client = await pool.connect();
+    try {
+        const result = await client.query('SELECT * FROM surfaces');
+        res.json(result.rows);
+    } catch (err) {
+        console.error('Database query error:', err);
+        res.status(500).send('Server error');
+    } finally {
+        client.release(); 
+    }  
 
 })
 
 
-router.post('/general/surfaces/add', async (req, res) => {
+router.post('/general/surfaces/add',checkConection,  async (req, res) => {
     const { name } = req.body;
     let errors = [];
 
@@ -111,14 +92,21 @@ router.post('/general/surfaces/add', async (req, res) => {
 
 })
 
-router.post('/general/dimensions', async (req, res) => {
-    
-    const records = await dataBase.query('select * from dimensions');
-    res.send(records.rows)
-
+router.post('/general/dimensions',checkConection,  async (req, res) => {
+     
+    const client = await pool.connect();
+    try {
+        const result = await client.query('SELECT * FROM dimensions');
+        res.json(result.rows);
+    } catch (err) {
+        console.error('Database query error:', err);
+        res.status(500).send('Server error');
+    } finally {
+        client.release(); 
+    }  
 })
 
-router.post('/general/dimensions/add', async (req, res) => {
+router.post('/general/dimensions/add',checkConection,  async (req, res) => {
     
     const { name, min_area, max_area } = req.body;
     let errors = [];

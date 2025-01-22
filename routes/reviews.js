@@ -1,10 +1,11 @@
 const express = require('express');
 const dataBase = require('../libraries/dataBase');
 const authenticateToken = require('../middlewares/authenticateToken');
+const { checkConection } = require('../middlewares/db');
 
 const router = express.Router();
 
-router.post('/add', authenticateToken,  async (req, res) => {
+router.post('/add',checkConection,  authenticateToken,  async (req, res) => {
 
     const {artistId, rating , title, body} = req.body;
     let errors = [];
@@ -70,7 +71,7 @@ router.post('/add', authenticateToken,  async (req, res) => {
 })
 
 
-router.post('/getByArtist', async (req, res) => {
+router.post('/getByArtist',checkConection,  async (req, res) => {
     const {artistId} = req.body;
     let errors = [];
 

@@ -1,11 +1,11 @@
 const express = require('express');
 const dataBase = require('../libraries/dataBase');
 const authenticateToken = require('../middlewares/authenticateToken');
-const {checkPaintingAvailability} = require('../middlewares/db')
+const {checkPaintingAvailability, checkConection} = require('../middlewares/db')
 
 const router = express.Router();
 
-router.post('/add', authenticateToken, checkPaintingAvailability,  async (req, res) => {
+router.post('/add',checkConection, authenticateToken, checkPaintingAvailability,  async (req, res) => {
     
     const {id_painting, price} = req.body;
     let errors = [];
@@ -55,7 +55,7 @@ router.post('/add', authenticateToken, checkPaintingAvailability,  async (req, r
     }
 })
 
-router.post('/view', authenticateToken, async (req, res) => {
+router.post('/view',checkConection,  authenticateToken, async (req, res) => {
 
     const records = await dataBase.query(`select cp.id, cp.id_user, cp.id_painting, cp.price, cp.date, 
 		p.title, p.description, p.width, p.height, m.name as material, s.name as surface,
@@ -71,7 +71,7 @@ router.post('/view', authenticateToken, async (req, res) => {
 
 })
 
-router.post('/sendToPay', authenticateToken, async (req, res) => {
+router.post('/sendToPay', checkConection, authenticateToken, async (req, res) => {
     const {cart_paintings } = req.body;
     let errors = [];
 

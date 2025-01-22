@@ -1,4 +1,5 @@
 const dataBase = require('../libraries/dataBase');
+const pool = require('../libraries/newDB');
 
 const insertMaterialsiIntoDb = async (req, res, next) => {
     const {name} = req.body
@@ -19,7 +20,7 @@ const insertMaterialsiIntoDb = async (req, res, next) => {
     }
     else {
         try {
-            await dataBase.pool.query('insert into materials (name) values ($1)', [name]);
+            await dataBase.query('insert into materials (name) values ($1)', [name]);
             next();
         } catch (err) {
             return res.status(500).send({
@@ -87,4 +88,24 @@ const checkPaintingAvailability = async (req, res, next) => {
      }
 }
 
-module.exports = {insertMaterialsiIntoDb, insertLogIntoDb, checkPaintingToArtist, checkPaintingAvailability}
+const removeListener = () => {
+    pool.removeAllListeners('error');
+};
+
+const checkConection = (req, res, next ) => {
+    removeListener();
+    console.log( 'listener', pool.listeners('error'));
+    pool.on('error', (err, client) => {
+        console.error('Unexpected error on idle client', err)
+       
+        res.status(500).send({
+            "status": "Error",
+            "message": 'Unexpected error on idle client '  + err
+        })
+        process.exit(-1)
+    }) 
+
+    next();
+}
+
+module.exports = {insertMaterialsiIntoDb, insertLogIntoDb, checkPaintingToArtist, checkPaintingAvailability, checkConection}
