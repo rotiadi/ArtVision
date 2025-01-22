@@ -13,15 +13,15 @@ require('dotenv').config();
 
 
 const app = express();
-const port = process.env.PORT;
+const port = process.env.PORT || 3000;
 
 // Middleware to parse JSON bodies
 app.use(cors());
 app.use(express.json());
 
-app.use('/api',  apiRoute);
+//app.use('/api',  apiRoute);
 
-/* 
+
 app.use('/migrate', migrateRoute);
 
 app.use(insertLogs)
@@ -32,7 +32,7 @@ app.use('/auth', authRoute);
 
 app.use('/picture', picturesRoute);
 app.use('/review', reviewsRoute);
-app.use('/cart', cartRoute); */
+app.use('/cart', cartRoute);
 
 app.get("/", (req, res) => {
     res.status(200).json({

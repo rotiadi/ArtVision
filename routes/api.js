@@ -2,17 +2,51 @@ const express = require('express');
 const dataBase = require('../libraries/dataBase');
 const multer = require('multer');
 const {insertMaterialsiIntoDb} = require('../middlewares/db')
+const pool = require('../libraries/newDB')
 
 const router = express.Router();
 
 // Configure Multer for memory storage
 const upload = multer({ storage: multer.memoryStorage() });
 
+const removeListener = () => {
+    pool.removeAllListeners('error');
+};
+
+
 
 router.post('/general/materials', async (req, res) => {
       
-    const records = await dataBase.query('select * from materials');
-    res.send(records.rows)
+    // the pool will emit an error on behalf of any idle clients
+    // it contains if a backend error or network partition happens
+    pool.on('error', (err, client) => {
+        console.error('Unexpected error on idle client', err)
+        process.exit(-1)
+    })
+    
+    const client = await pool.connect();
+    try {
+        const result = await client.query('SELECT * FROM materials');
+        res.json(result.rows);
+    } catch (err) {
+        console.error('Database query error:', err);
+        res.status(500).send('Server error');
+    } finally {
+        removeListener();
+        client.release(); // Always release the client
+    }
+
+    /* await pool.connect();
+    try {
+        const result = await pool.query('select * from materials');
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server error');
+    } finally {
+        pool.end(); // Release the connection
+    } */
+    
 
 })
 
