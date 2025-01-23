@@ -152,6 +152,7 @@ router.post('/getAll',checkConection,  async (req, res) => {
 });
 
 router.post('/getByUser', checkConection, authenticateToken, async (req, res) => {
+    console.log(req.id_user);
     
     try {
         const result = await dataBase.query(`select 

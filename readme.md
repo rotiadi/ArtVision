@@ -28,7 +28,16 @@ For the password there are the following checks:
 - userName: mandatory , string
 - password: mandatory , string
 
-If succes it generates a key that contains userName, email and id of user.
+If succes it generates 2 tokens that contains userName, email and id of user.
+- token - used further for authentication . Expires in 2 min
+- tokenRefresh - used to refresh token when it's expired. Expires in 1 day.
+
+
+# /auth/refresh-token
+## POST
+
+Cookie tokenRefresh must be valid. 
+
 
 # /api//general/materials/add
 ## POST
@@ -99,7 +108,7 @@ If succes it generates a key that contains userName, email and id of user.
 ## POST
 
 **Authorization**
- Token (that its generated on login - see /auth/login). Is mandatory.
+ token from cookien(that its generated on login - see /auth/login). Is mandatory.
 
 **Body**
 
@@ -207,7 +216,7 @@ price (text)
 ## POST
 
 **Authorization**
-Token (that its generated on login - see /auth/login). Is mandatory.
+token from cookie (that its generated on login - see /auth/login). Is mandatory.
 
 **response**
 [
@@ -318,7 +327,7 @@ title: text , mandatory
 body: text , mandatory
 
 **Authorization**\
-token genererated on login 
+token from cookie genererated on login 
 
 **response** 
 {
@@ -365,7 +374,7 @@ token genererated on login
 }
 
 **Authorization**
- Token (that its generated on login - see /auth/login). Is mandatory.
+ token from cookie (that its generated on login - see /auth/login). Is mandatory.
 
 **response**
 {
@@ -377,7 +386,7 @@ token genererated on login
 ## POST
 
 **Authorization**
- Token (that its generated on login - see /auth/login). Is mandatory.
+ token from cookie (that its generated on login - see /auth/login). Is mandatory.
 
 **response**
 [
@@ -418,7 +427,7 @@ token genererated on login
 ## POST
 
 **Authorization**
- Token (that its generated on login - see /auth/login). Is mandatory.
+ token from cookie (that its generated on login - see /auth/login). Is mandatory.
 
  **body**
  {

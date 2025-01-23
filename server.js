@@ -6,21 +6,19 @@ const picturesRoute = require('./routes/imagesApi.js')
 const reviewsRoute = require('./routes/reviews.js')
 const cartRoute = require('./routes/cart.js')
 const cors = require('cors');
-
-const insertLogs = require('./middlewares/logs.js')
+const cookieParser = require('cookie-parser');
+const insertLogs = require('./middlewares/logs.js');
 
 require('dotenv').config();
-
 
 const app = express();
 const port = process.env.PORT || 3000;
 
+
 // Middleware to parse JSON bodies
+app.use(cookieParser());
 app.use(cors());
 app.use(express.json());
-
-//app.use('/api',  apiRoute);
-
 
 app.use('/migrate', migrateRoute);
 
@@ -29,7 +27,6 @@ app.use(insertLogs)
 // Use routes
 app.use('/api',  apiRoute);
 app.use('/auth', authRoute);
-
 app.use('/picture', picturesRoute);
 app.use('/review', reviewsRoute);
 app.use('/cart', cartRoute);
