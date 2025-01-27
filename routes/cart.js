@@ -10,6 +10,7 @@ const router = express.Router();
 
 router.post(
   "/add",
+  authenticateToken,
   checkConection,
   checkPaintingAvailability,
   async (req, res) => {

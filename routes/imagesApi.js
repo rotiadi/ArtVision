@@ -155,7 +155,7 @@ router.post(
   }
 );
 
-router.post("/getAll", authenticateToken, checkConection, async (req, res) => {
+router.post("/getAll", checkConection, async (req, res) => {
   try {
     const result = await dataBase.query(`select 
             p.id, p.id_material, m.name material_name,
@@ -175,6 +175,7 @@ router.post("/getAll", authenticateToken, checkConection, async (req, res) => {
 
 router.post(
   "/getByUser",
+  authenticateToken,
   checkConection,
 
   async (req, res) => {
