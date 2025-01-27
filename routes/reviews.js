@@ -1,10 +1,11 @@
 const express = require("express");
 const dataBase = require("../libraries/dataBase");
 const { checkConection } = require("../middlewares/db");
+const authenticateToken = require("../middlewares/authenticateToken");
 
 const router = express.Router();
 
-router.post("/add", checkConection, async (req, res) => {
+router.post("/add", authenticateToken, checkConection, async (req, res) => {
   const { artistId, rating, title, body } = req.body;
   let errors = [];
 

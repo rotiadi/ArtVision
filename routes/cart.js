@@ -4,6 +4,7 @@ const {
   checkPaintingAvailability,
   checkConection,
 } = require("../middlewares/db");
+const authenticateToken = require("../middlewares/authenticateToken");
 
 const router = express.Router();
 
@@ -60,7 +61,7 @@ router.post(
   }
 );
 
-router.post("/view", checkConection, async (req, res) => {
+router.post("/view", authenticateToken, checkConection, async (req, res) => {
   const records = await dataBase.query(
     `select cp.id, cp.id_user, cp.id_painting, cp.price, cp.date, 
 		p.title, p.description, p.width, p.height, m.name as material, s.name as surface,
@@ -77,69 +78,74 @@ router.post("/view", checkConection, async (req, res) => {
   res.send(records.rows);
 });
 
-router.post("/sendToPay", checkConection, async (req, res) => {
-  const { cart_paintings } = req.body;
-  let errors = [];
+router.post(
+  "/sendToPay",
+  authenticateToken,
+  checkConection,
+  async (req, res) => {
+    const { cart_paintings } = req.body;
+    let errors = [];
 
-  if (!cart_paintings) {
-    errors.push({
-      field: "cart_paintings",
-      message: "cart_paintings is invalid",
-    });
-  } else {
-    if (cart_paintings.length === 0) {
+    if (!cart_paintings) {
       errors.push({
         field: "cart_paintings",
-        message: "There are no paintings",
+        message: "cart_paintings is invalid",
       });
-    }
-  }
-
-  if (errors.length > 0) {
-    res.status(401);
-    res.send({
-      Status: "Invalid inputs",
-      message: errors,
-    });
-  } else {
-    const client = await dataBase.pool.connect();
-    await client.query("BEGIN");
-
-    try {
-      for (let index = 0; index < cart_paintings.length; index++) {
-        const result = await client.query(
-          `INSERT INTO public.order_details(id_user, id_cart, price, date) VALUES ($1, $2, $3, $4)`,
-          [
-            req.id_user,
-            cart_paintings[index].id,
-            cart_paintings[index].price,
-            new Date().toLocaleDateString(),
-          ]
-        );
-
-        const resultUpdate = await client.query(
-          `update cart_products set status = 'Send to payment' where id = $1`,
-          [cart_paintings[index].id]
-        );
-
-        await client.query(
-          `update paintings  set status = 'Sold' where id  in (select cp.id_painting from cart_products cp where cp.id = $1)`,
-          [cart_paintings[index].id]
-        );
+    } else {
+      if (cart_paintings.length === 0) {
+        errors.push({
+          field: "cart_paintings",
+          message: "There are no paintings",
+        });
       }
-      await client.query("COMMIT");
-      res.status(200);
+    }
+
+    if (errors.length > 0) {
+      res.status(401);
       res.send({
-        Status: "Success",
-        message: `The order is send!`,
+        Status: "Invalid inputs",
+        message: errors,
       });
-    } catch (error) {
-      await client.query("ROLLBACK");
-      res.status(401).json({ Status: "Error", message: error });
-    } finally {
-      client.release();
+    } else {
+      const client = await dataBase.pool.connect();
+      await client.query("BEGIN");
+
+      try {
+        for (let index = 0; index < cart_paintings.length; index++) {
+          const result = await client.query(
+            `INSERT INTO public.order_details(id_user, id_cart, price, date) VALUES ($1, $2, $3, $4)`,
+            [
+              req.id_user,
+              cart_paintings[index].id,
+              cart_paintings[index].price,
+              new Date().toLocaleDateString(),
+            ]
+          );
+
+          const resultUpdate = await client.query(
+            `update cart_products set status = 'Send to payment' where id = $1`,
+            [cart_paintings[index].id]
+          );
+
+          await client.query(
+            `update paintings  set status = 'Sold' where id  in (select cp.id_painting from cart_products cp where cp.id = $1)`,
+            [cart_paintings[index].id]
+          );
+        }
+        await client.query("COMMIT");
+        res.status(200);
+        res.send({
+          Status: "Success",
+          message: `The order is send!`,
+        });
+      } catch (error) {
+        await client.query("ROLLBACK");
+        res.status(401).json({ Status: "Error", message: error });
+      } finally {
+        client.release();
+      }
     }
   }
-});
+);
 
 module.exports = router;

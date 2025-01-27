@@ -3,6 +3,7 @@ const cloudinary = require("cloudinary").v2;
 const multer = require("multer");
 const dataBase = require("../libraries/dataBase");
 const { checkConection } = require("../middlewares/db");
+const authenticateToken = require("../middlewares/authenticateToken");
 require("dotenv").config();
 
 const router = express.Router();
@@ -18,6 +19,7 @@ cloudinary.config({
 
 router.post(
   "/upload",
+  authenticateToken,
   checkConection,
   upload.single("image"),
 
@@ -153,7 +155,7 @@ router.post(
   }
 );
 
-router.post("/getAll", checkConection, async (req, res) => {
+router.post("/getAll", authenticateToken, checkConection, async (req, res) => {
   try {
     const result = await dataBase.query(`select 
             p.id, p.id_material, m.name material_name,
@@ -176,8 +178,6 @@ router.post(
   checkConection,
 
   async (req, res) => {
-    console.log(req.id_user);
-
     try {
       const result = await dataBase.query(
         `select 

@@ -256,21 +256,6 @@ router.post("/login", async (req, res) => {
           }
         );
 
-        /* const tokenRefresh = jwt.sign(
-          {
-            userName: records.rows[0].user_name,
-            email: records.rows[0].email,
-            id: records.rows[0].id,
-          },
-          process.env.JWT_SECRET,
-          {
-            algorithm: "HS512",
-            expiresIn: "1d",
-          }
-        ); */
-        /*         res.cookie("token", token, { httpOnly: true });
-        res.cookie("tokenRefresh", tokenRefresh, { httpOnly: true }); */
-
         res.send({
           Status: "Success",
           key: token,
