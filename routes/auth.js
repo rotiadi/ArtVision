@@ -129,6 +129,23 @@ const checkPassword = (req, res, next) => {
   }
 };
 
+const translateErrorMessage = (user_name, email, error) => {
+  let ret = "";
+  switch (error.constraint) {
+    case "users_user_name_key":
+      ret = `The username ${user_name} is already in use`;
+      break;
+    case "users_email_key":
+      ret = `The email address ${email} is already in use`;
+      break;
+    default:
+      ret = error.detail;
+      break;
+  }
+
+  return ret;
+};
+
 router.post(
   "/register",
   checkConection,
@@ -193,8 +210,8 @@ router.post(
         .catch((err) => {
           res.status(500);
           res.send({
-            Status: "rror writting to DB",
-            message: err.detail,
+            Status: "Error",
+            message: translateErrorMessage(user_name, email, err),
           });
         });
 
